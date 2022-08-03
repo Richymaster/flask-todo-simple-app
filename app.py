@@ -35,7 +35,7 @@ class User(db.Model):
     last_name = db.Column(db.String(100))
     surname = db.Column(db.String(100))    
     email = db.Column(db.String(100), unique=True)  
-    password = db.Column(db.String(100, unique=True))
+    password = db.Column(db.String(100))
     
     def __init__(self, *args, **kwargs):
         super(User, self).__init__(*args, **kwargs)
@@ -45,11 +45,35 @@ class User(db.Model):
     #     self.completd = completed
     #     self.description = description
     #     self.comments = comments
-# db.create_all()
+db.create_all()
 
 @app.route('/')
 def index():
     return render_template('login.html')
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        surname = request.form['surname']
+        email = request.form['email']
+        password = request.form['password']
+        
+        new_user = User( 
+                        first_name=first_name,
+                        last_name=last_name,
+                        surname=surname,
+                        email=email,
+                        password=password)
+        
+        db.session.add(new_user)
+        db.session.commit()
+        flash("New User Added Successfully!")
+        # msg = 'New User Added Successfully!'
+        return redirect(url_for('login'))
+    
+    return render_template('register.html')
         
 @app.route('/todos')
 def todos():
@@ -90,7 +114,7 @@ def todo():
 def login():
     
     print("login route hit")
-    return render_template('login')
+    return render_template('login.html')
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8000, debug=True)
