@@ -74,6 +74,33 @@ def register():
         return redirect(url_for('login'))
     
     return render_template('register.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        f_email = request.form['email']
+        f_password = request.form['password']
+        
+        user = User.query.filter(User.email ==f_email, User.password ==f_password).first()
+        if user:
+            # if f_email == user.email and f_password == user.password:
+            return redirect(url_for('dashboard'))
+            flash("Login successful")
+        return redirect(url_for('login'))
+        flash("Incorrect Login Credentials")
+        
+        return redirect(url_for("register"))
+        flash("No account found with that email")
+        
+    return render_template("login.html")
+    
+    
+    print("login route hit")
+    return render_template('login.html')
+
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
         
 @app.route('/todos')
 def todos():
@@ -110,11 +137,7 @@ def todo():
     
     return render_template('index.html')
 
-@app.route('/login')
-def login():
-    
-    print("login route hit")
-    return render_template('login.html')
+
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8000, debug=True)
