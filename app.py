@@ -1,3 +1,4 @@
+from email.policy import default
 from flask import Flask, render_template, url_for, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 # from models import Todo
@@ -14,27 +15,44 @@ class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     task = db.Column(db.String(200))
     description = db.Column(db.Text)
-    completed = db.Column(db.Boolean())
+    completed = db.Column(db.Integer, default=0)
     comments = db.Column(db.String(255))
     
 
     # def __init__(self, *args, **kwargs):
     #     super(Todo, self).__init__(*args, **kwargs)
-    def __init__(self, task, completed):
+    def __init__(self, task, completed, comments, description):
         self.task = task
         self.completd = completed
+        self.description = description
+        self.comments = comments
         
-db.create_all()
-        
+# db.create_all()
+
 @app.route('/')
 def index():
+    return render_template('login.html')
+        
+@app.route('/todos')
+def todos():
     todos = Todo.query.all()
-    print(todos)
+    output_list = []
+    for todo in todos:
+        output_dict = {
+            "task": todo.task,
+            "completed" : todo.completed,
+            "description" : todo.description,
+            "comments" : todo.comments
+        }
+        
+        output_list.append(output_dict)
+        
+        print(output_list)
     
-    return render_template('index.html', todos=todos)
+    return render_template('index.html', todos=output_list)
 
 @app.route('/todo', methods=['POST', 'GET'])
-def todos():
+def todo():
     if request.method == 'POST':
         task = request.form.get('task')
         completed = request.form.get('completed')
@@ -44,11 +62,11 @@ def todos():
         new_task = Todo(task=task, description=description, comments=comments, completed=completed)
         db.session.add(new_task)
         db.session.commit()
-        message = ("New Task Successfully Created!")
+        # message = ("New Task Successfully Created!")
         
         return redirect('/')
     
-    return render_template('index.html', message=message)
+    return render_template('index.html')
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8000, debug=True)
