@@ -1,7 +1,8 @@
 from email.policy import default
+from enum import unique
 from flask import Flask, render_template, url_for, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
-# from models import Todo
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 
@@ -10,6 +11,7 @@ app.config['SECRET_KEY'] = 'nzyrw4uZOu8fcuaeruolumiouxizif'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -27,6 +29,22 @@ class Todo(db.Model):
         self.description = description
         self.comments = comments
         
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String(100))
+    last_name = db.Column(db.String(100))
+    surname = db.Column(db.String(100))    
+    email = db.Column(db.String(100), unique=True)  
+    password = db.Column(db.String(100, unique=True))
+    
+    def __init__(self, *args, **kwargs):
+        super(User, self).__init__(*args, **kwargs)
+        
+    # def __init__(self, task, completed, comments, description):
+    #     self.task = task
+    #     self.completd = completed
+    #     self.description = description
+    #     self.comments = comments
 # db.create_all()
 
 @app.route('/')
@@ -67,6 +85,12 @@ def todo():
         return redirect('/')
     
     return render_template('index.html')
+
+@app.route('/login')
+def login():
+    
+    print("login route hit")
+    return render_template('login')
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8000, debug=True)
