@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>TODO APP</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    </head>
+    <body>
+
+        {% block todos %}
+            <h1>Todo App</h1>
+
+            <form action="/todo" method="POST">
+                <div  class="input-group mb-3 input-group-sm">
+                    <label>Task Name</label>
+                    <input type="text" name="task" required />
+                </div>
+                <div  class="input-group mb-3 input-group-sm">
+                    <label>Completed</label>
+                    <input type="checkbox" name="completed" required />
+                </div>
+               <div  class="input-group mb-3 input-group-sm" >
+                    <label for="comment">Comments:</label>
+                    <textarea class="form-control" rows="5" name="comments" id="comments"></textarea>
+                </div>
+                <div  class="input-group mb-3 input-group-sm" >
+                    <label for="comment">Description:</label>
+                    <textarea class="form-control" rows="5" name="description" id="description"></textarea>
+                </div>
+            </form>
+
+            {% if todos %}
+            <table>
+                <th>
+                    Todo Items
+                </th>
+                <tbody>
+                    {% if messag%}
+                    {% for msg in message %}
+
+                    {{msg}}
+                    {% endfor %}
+
+                    {% endif %} 
+                    {% for todo in todos %}
+                        <p>{{ todo.id }}</p>
+                        <p> {{ todo.task }}</p>
+                        <p>{{ todo.completed }}</p>
+                    {% endfor%}
+                    
+
+                <tbody>
+
+
+            </table>
+            
+            
+            {% endif %}
+
+        
+        {% endblock todos %}
+                
+
+                
+        
+        <script src="{{ url_for('static', filename='js/scripts.js') }}" async defer></script>
+    </body>
+</html>
